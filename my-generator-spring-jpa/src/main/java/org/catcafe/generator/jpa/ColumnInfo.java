@@ -1,11 +1,5 @@
 package org.catcafe.generator.jpa;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import org.apache.commons.lang3.StringUtils;
 
 public class ColumnInfo {
@@ -42,7 +36,7 @@ public class ColumnInfo {
 	// 字段值
 	private Object value;
 
-	public void process() {
+	public ColumnInfo process() {
 		/**
 		 * 处理java关键字
 		 */
@@ -126,6 +120,8 @@ public class ColumnInfo {
 			this.javaClassName = "Date";
 			this.format = FORMAT_TIMESTAMP;
 		}
+		
+		return this;
 	}
 
 	public int getIndex() {

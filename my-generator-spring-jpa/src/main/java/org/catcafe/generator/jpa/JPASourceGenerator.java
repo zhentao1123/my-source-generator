@@ -8,9 +8,10 @@ package org.catcafe.generator.jpa;
 import static org.catcafe.generator.jpa.FreeMarkerUtils.generateFileByFile;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,6 +70,16 @@ public class JPASourceGenerator {
 		}
 	}
 	
+	public void generateRepository(String repositoryTemplateFileName, String repositoryPackage, String entityPackage, String tableName, boolean overwrite){
+		try {
+			if (this.getMysqlInfoUnit() != null) {
+				generateRepository(repositoryTemplateFileName, repositoryPackage, entityPackage, this.getMysqlInfoUnit().getTableInfo(tableName).process(), overwrite);
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void generateEntity(String entityTemplateFileName, String entityPackage, TableInfo tableInfo, boolean overwrite, String baseEntityPackage, String baseEntityName) throws IOException, TemplateException {
 		try {
 			String tableName = tableInfo.getName();
@@ -97,8 +108,28 @@ public class JPASourceGenerator {
 		}
 	}
 	
-	public void generateRepository() {
-		//TODO
+	public void generateRepository(String repositoryTemplateFileName, String repositoryPackage, String entityPackage, TableInfo tableInfo, boolean overwrite) throws IOException, TemplateException {
+		try {
+			String entityClassName = tableInfo.getJavaClassName();
+			String entityPkClassName = tableInfo.getPk().process().getJavaClassName();
+			String entityPkClass = tableInfo.getPk().process().getJavaClass();
+			
+			String className = entityClassName + "Repository";
+			String destFolderPath = (this.basePackage + "." + repositoryPackage).replace('.', '/');
+			String destFilePath = "src/main/java/" + destFolderPath + "/" + className + ".java"; 
+			
+			Map<String, String> mapModel = new HashMap<String, String>();
+			mapModel.put("basePackage", basePackage);
+			mapModel.put("repositoryPackage", repositoryPackage);
+			mapModel.put("entityPackage", entityPackage);
+			mapModel.put("entityClassName", entityClassName);
+			mapModel.put("entityPkClass", entityPkClass);
+			mapModel.put("entityPkClassName", entityPkClassName);
+		
+			generateFileByFile(repositoryTemplateFileName, destFilePath, this.config, mapModel, overwrite);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static class EntityModel{
@@ -189,21 +220,6 @@ public class JPASourceGenerator {
 		}
 	}
 	
-	/**
-	 * 数据库命名变为Java类名
-	 * 将aa_bb的格式变为AaBb
-	 * @param dbName
-	 * @return
-	 */
-	private String dbName2JavaClassName(String dbName) {
-		String[] strArr = dbName.split("_");
-		StringBuilder sb = new StringBuilder();
-		for(String str : strArr) {
-			sb.append(Character.toUpperCase(str.charAt(0))).append(str.substring(1));
-		}
-		return sb.toString();
-	}
-	
 	public String getBasePackage() {
 		return basePackage;
 	}
@@ -223,21 +239,4 @@ public class JPASourceGenerator {
 		this.mysqlInfoUnit = mysqlInfoUnit;
 	}
 	
-	public static void main(String[] args) throws IOException, TemplateException, SQLException 
-	{
-		String url = "jdbc:mysql://rm-uf69svh1l840s9kd5zo.mysql.rds.aliyuncs.com/wxmall?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=round&useSSL=false"; 
-		String userName = "muzusoftroot"; 
-		String password = "39fIdkwls230oP"; 
-		String database = "wxmall"; 
-		
-		JPASourceGenerator sourceGenerator = new JPASourceGenerator(
-				url, userName, password, database, 
-				"/flt/java", "com.springpool.wxmall");
-		
-		MysqlInfoUtil mysqlInfoUtil = new MysqlInfoUtil(url, userName, password, database);
-		List<String> tableNames = mysqlInfoUtil.getTableNames();
-		for(String tableName : tableNames) {
-			sourceGenerator.generateEntity("entity.flt", "dao.entity", tableName, true, "dao.entity", "BaseEntity");
-		}
-	}
 }
