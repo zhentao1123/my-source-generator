@@ -1,0 +1,60 @@
+package ${basePackage}.${entityPackage};
+
+import javax.persistence.*;
+
+import java.io.Serializable;
+<#list importClassList as a>
+import ${a};
+</#list>
+
+<#if baseEntityImport?? && baseEntityImport!="">import ${basePackage}.${baseEntityImport}</#if>
+
+@Entity
+@Table(name="${tableName}")
+public class ${className}<#if baseEntityName?? && baseEntityName!=""> extends ${baseEntityName}</#if> implements Serializable {
+	private static final long serialVersionUID = 1L;
+<#if tableInfo??>
+<#list tableInfo.columnInfos as a>
+	
+	<#if a.comment?? && a.comment!="">
+	/**
+	 * ${a.comment}
+	 */
+	</#if>
+	<#if a.pk?? && a.pk=true>
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	</#if>
+	<#if a.lob?? && a.lob=true>
+	@Lob
+	</#if>
+	<#if a.format??>
+	<#if a.format="DATE">
+	@Temporal(TemporalType.DATE)
+	<#elseif a.format="TIME">
+	@Temporal(TemporalType.TIME)
+	<#elseif a.format="TIMESTAMP">
+	@Temporal(TemporalType.TIMESTAMP)
+	<#else>
+	</#if>
+	</#if>
+	@Column(name="${a.field}"<#if a.require?? && a.require=true>, nullable=false</#if><#if a.length?? && a.length!="">, length=${a.length}</#if>)
+	private ${a.javaClassName} ${a.javaAttributeName};
+</#list>
+<#if className?? && className!="">
+
+	public ${className}(){
+	}
+</#if>
+<#list tableInfo.columnInfos as a>
+	
+	public ${a.javaClassName} get${a.javaMethodName}(){
+		return this.${a.javaAttributeName};
+	}
+	
+	public void set${a.javaMethodName}(${a.javaClassName} ${a.javaAttributeName}){
+		this.${a.javaAttributeName} = ${a.javaAttributeName};
+	}
+</#list>
+</#if>
+}
