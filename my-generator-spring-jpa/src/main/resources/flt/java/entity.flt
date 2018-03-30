@@ -38,7 +38,7 @@ public class ${className}<#if baseEntityName?? && baseEntityName!=""> extends ${
 	<#else>
 	</#if>
 	</#if>
-	@Column(name="${a.field}"<#if a.require?? && a.require=true>, nullable=false</#if><#if a.length?? && a.length!="">, length=${a.length}</#if>)
+	@Column(name="${a.field}"<#if a.pk?? && a.pk=true>, unique=true</#if><#if a.require?? && a.require=true>, nullable=false</#if><#if a.length?? && a.length!="">, length=${a.length}</#if>)
 	private ${a.javaClassName} ${a.javaAttributeName};
 </#list>
 <#if className?? && className!="">
