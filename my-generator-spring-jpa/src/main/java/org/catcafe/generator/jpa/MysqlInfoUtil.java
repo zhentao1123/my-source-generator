@@ -97,7 +97,14 @@ public class MysqlInfoUtil {
 		Connection conn = openConn();
 		Statement stmt = conn.createStatement();
 
-		ResultSet rs = stmt.executeQuery("select * from `" + tableName + "` where 1=2");
+		//获取表信息（注释）
+		ResultSet rs2 = stmt.executeQuery("show table status where name = '" + tableName + "'");		
+		rs2.next();
+		tableInfo.setComment(rs2.getString("Comment"));
+		rs2.close();
+		
+		//获取字段信息
+		ResultSet rs = stmt.executeQuery("select * from `" + tableName + "` where 1=2");		
 		ResultSetMetaData rsmd = rs.getMetaData();
 		ResultSet rs1 = stmt.executeQuery("show full columns from " + tableName);
 
@@ -112,10 +119,13 @@ public class MysqlInfoUtil {
 			if (type.contains("(")) {
 				columnInfo.setType(type.substring(0, type.indexOf("(")));
 				columnInfo.setLength(type.substring(type.indexOf("(") + 1, type.indexOf(")")));
+			}else {
+				columnInfo.setType(type);
 			}
 			columnInfo.setComment(rs1.getString("Comment"));
 			columnInfo.setJavaClass(rsmd.getColumnClassName(i));
 			columnInfo.setPk("PRI".equals(rs1.getString("Key")));
+			columnInfo.setExtra(rs1.getString("Extra"));
 			columnInfo.setRequire(!"YES".equals(rs1.getString("Null")));
 
 			tableFieldList.add(columnInfo);

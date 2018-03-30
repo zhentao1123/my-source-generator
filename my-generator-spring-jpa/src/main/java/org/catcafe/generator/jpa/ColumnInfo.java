@@ -17,6 +17,10 @@ public class ColumnInfo {
 	private String comment;
 	// 是否主键
 	private boolean pk;
+	// 是否自增长
+	private boolean autoIncrement;
+	//扩展信息（自增长主键值为：auto_increment）
+	private String extra;
 	// 是否必须
 	private boolean require;
 	// 字段长度
@@ -37,6 +41,11 @@ public class ColumnInfo {
 	private Object value;
 
 	public ColumnInfo process() {
+		/**
+		 * 主键增长策略
+		 */
+		this.autoIncrement = ("auto_increment".equals(this.extra)) ? true : false;
+		
 		/**
 		 * 处理java关键字
 		 */
@@ -83,8 +92,22 @@ public class ColumnInfo {
 					this.javaClass = "java.lang.String";
 					break;
 				}
+				//个别字段添加@Lob
+				case "tinyblob":
+				case "mediumblob":
+				case "blob":
+				case "longblob":
+				case "tinytext":
+				case "mediumtext":
+				case "text":
+				case "longtext":
+				{
+					this.lob = true;
+					break;
+				}
 				default :{}
 			}
+			
 		}
 		
 		/**
@@ -92,7 +115,7 @@ public class ColumnInfo {
 		 */
 		this.comment = processSpecialChar(this.comment);
 		//this.javaClass = "[B".equals(this.javaClass) ? "java.lang.Byte" : this.javaClass;
-		this.lob = "[B".equals(this.javaClass) ? true : false;
+		//this.lob = "[B".equals(this.javaClass) ? true : false;
 		this.javaClass = "[B".equals(this.javaClass) ? "java.lang.Byte" : this.javaClass;
 		this.javaClassName = "java.lang.Byte".equals(this.javaClass) ? "byte[]" : this.javaClass.substring(this.javaClass.lastIndexOf(".") + 1);
 		//"3,5"这类的长度暂时过滤
@@ -162,6 +185,22 @@ public class ColumnInfo {
 
 	public void setPk(boolean pk) {
 		this.pk = pk;
+	}
+	
+	public boolean isAutoIncrement() {
+		return autoIncrement;
+	}
+
+	public void setAutoIncrement(boolean autoIncrement) {
+		this.autoIncrement = autoIncrement;
+	}
+
+	public String getExtra() {
+		return extra;
+	}
+
+	public void setExtra(String extra) {
+		this.extra = extra;
 	}
 
 	public boolean isRequire() {

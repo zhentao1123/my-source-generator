@@ -1,3 +1,4 @@
+<#if tableInfo??>
 package ${basePackage}.${entityPackage};
 
 import javax.persistence.*;
@@ -9,11 +10,14 @@ import ${a};
 
 <#if baseEntityImport?? && baseEntityImport!="">import ${basePackage}.${baseEntityImport}</#if>
 
+/**
+ * <#if tableInfo.comment?? && tableInfo.comment!="">${tableInfo.comment}<#else>${tableName}</#if>
+ * 
+ */
 @Entity
 @Table(name="${tableName}")
 public class ${className}<#if baseEntityName?? && baseEntityName!=""> extends ${baseEntityName}</#if> implements Serializable {
 	private static final long serialVersionUID = 1L;
-<#if tableInfo??>
 <#list tableInfo.columnInfos as a>
 	
 	<#if a.comment?? && a.comment!="">
@@ -23,7 +27,9 @@ public class ${className}<#if baseEntityName?? && baseEntityName!=""> extends ${
 	</#if>
 	<#if a.pk?? && a.pk=true>
 	@Id
+	<#if a.autoIncrement?? && a.autoIncrement=true>
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	</#if>
 	</#if>
 	<#if a.lob?? && a.lob=true>
 	@Lob
@@ -56,5 +62,5 @@ public class ${className}<#if baseEntityName?? && baseEntityName!=""> extends ${
 		this.${a.javaAttributeName} = ${a.javaAttributeName};
 	}
 </#list>
-</#if>
 }
+</#if>
