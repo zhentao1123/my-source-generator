@@ -114,7 +114,7 @@ public class MysqlInfoUtil {
 			ColumnInfo columnInfo = new ColumnInfo();
 
 			columnInfo.setIndex(i);
-			columnInfo.setField(rs1.getString("Field"));
+			columnInfo.setField(rs1.getString("Field").replaceAll(" ", ""));
 			String type = rs1.getString("Type");
 			if (type.contains("(")) {
 				columnInfo.setType(type.substring(0, type.indexOf("(")));
