@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.catcafe.generator.util.JsonUtil;
@@ -77,9 +78,14 @@ public class MysqlInfoUtil {
 		ResultSet rs = stmt.executeQuery("show table status from " + database);
 
 		while (rs.next()) {
-			String tableName = rs.getString("Name");
-			tableNames.add(tableName);
-			// log.info(tableName);
+			String comment = rs.getString("Comment");
+			if(StringUtils.isNoneBlank(comment) && comment.contains("VIEW")) { //过滤视图
+				continue;
+			}else {
+				String tableName = rs.getString("Name");
+				tableNames.add(tableName);
+				// log.info(tableName);
+			}
 		}
 
 		rs.close();
