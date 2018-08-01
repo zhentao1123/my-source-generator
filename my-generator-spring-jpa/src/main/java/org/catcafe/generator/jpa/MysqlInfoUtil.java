@@ -105,8 +105,9 @@ public class MysqlInfoUtil {
 
 		//获取表信息（注释）
 		ResultSet rs2 = stmt.executeQuery("show table status where name = '" + tableName + "'");		
-		rs2.next();
-		tableInfo.setComment(rs2.getString("Comment"));
+		if(rs2.next()) {
+			tableInfo.setComment(rs2.getString("Comment"));
+		}
 		rs2.close();
 		
 		//获取字段信息
