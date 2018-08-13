@@ -75,7 +75,7 @@ public class MysqlInfoUtil {
 		Connection conn = openConn();
 
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("show table status from " + database);
+		ResultSet rs = stmt.executeQuery("show table status from `" + database + "`");
 
 		while (rs.next()) {
 			String comment = rs.getString("Comment");
