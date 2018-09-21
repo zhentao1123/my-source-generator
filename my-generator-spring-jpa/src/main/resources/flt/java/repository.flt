@@ -1,9 +1,9 @@
 package ${basePackage}.${repositoryPackage};
 
 import ${entityPkClass};
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ${basePackage}.${entityPackage}.${entityClassName};
 
-public interface ${entityClassName}Repository extends PagingAndSortingRepository<${entityClassName}, ${entityPkClassName}>{
+public interface ${entityClassName}Repository extends JpaRepository<${entityClassName}, ${entityPkClassName}>{
 	
 }

@@ -3,6 +3,9 @@ package ${basePackage}.${entityPackage};
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.io.Serializable;
 <#list importClassList as a>
 import ${a};
@@ -16,6 +19,8 @@ import ${a};
  */
 @Entity
 @Table(name="${tableName}")
+@DynamicInsert(true)
+@DynamicUpdate(true)
 public class ${className}<#if baseEntityName?? && baseEntityName!=""> extends ${baseEntityName}</#if> implements Serializable {
 	private static final long serialVersionUID = 1L;
 <#list tableInfo.columnInfos as a>

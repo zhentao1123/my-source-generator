@@ -24,15 +24,19 @@ public class TestJPASourceGenerator {
 				url, userName, password, database, 
 				"/flt/java", "com.springpool.wxmall");
 		
-		String singleTable = "test1";
-		if(StringUtils.isBlank(singleTable)) {
+		String[] singleTable = new String[] {"test"};
+		if(singleTable.length==0) {
 			MysqlInfoUtil mysqlInfoUtil = new MysqlInfoUtil(url, userName, password, database);
 			List<String> tableNames = mysqlInfoUtil.getTableNames();
 			for(String tableName : tableNames) {
 				sourceGenerator.generateEntity("entity.flt", "dao.entity", tableName, true, "dao.entity", "BaseEntity");
+				sourceGenerator.generateRepository("repository.flt", "dao.repository", "dao.entity", tableName, false);
 			}
 		}else {
-			sourceGenerator.generateEntity("entity.flt", "dao.entity", singleTable, true, "dao.entity", "BaseEntity");
+			for(String tableName : singleTable) {
+				sourceGenerator.generateEntity("entity.flt", "dao.entity", tableName, true, "dao.entity", "BaseEntity");
+				sourceGenerator.generateRepository("repository.flt", "dao.repository", "dao.entity", tableName, false);
+			}
 		}
 	}
 	
